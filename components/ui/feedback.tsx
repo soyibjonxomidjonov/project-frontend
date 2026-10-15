@@ -1,0 +1,9 @@
+"use client";
+import { createContext, useContext, useState, type ReactNode } from "react";
+import { CheckCircle2, CircleAlert, X } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useI18n } from "@/lib/i18n/provider";
+type Toast = { id: number; message: string; tone: "success" | "error" };
+const ToastContext = createContext<{ push: (message: string, tone?: Toast["tone"]) => void } | null>(null);
+export function ToastProvider({ children }: { children: ReactNode }) { const {t}=useI18n(); const [toasts, setToasts] = useState<Toast[]>([]); const reduceMotion = useReducedMotion(); function push(message: string, tone: Toast["tone"] = "success") { const id = Date.now() + Math.random(); setToasts((current) => [...current, { id, message, tone }]); setTimeout(() => setToasts((current) => current.filter((item) => item.id !== id)), 5000); } return <ToastContext.Provider value={{ push }}>{children}<div className="fixed bottom-4 right-4 z-[100] flex w-[calc(100vw-2rem)] max-w-sm flex-col gap-2" role="status" aria-live="polite"><AnimatePresence>{toasts.map((toast) => <motion.div key={toast.id} initial={reduceMotion?false:{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={reduceMotion?undefined:{opacity:0,y:8}} transition={{duration:.18}} className="flex items-start gap-3 rounded-xl border border-border bg-surface p-4 shadow-xl">{toast.tone === "success" ? <CheckCircle2 className="size-5 shrink-0 text-success" /> : <CircleAlert className="size-5 shrink-0 text-error" />}<p className="flex-1 text-sm">{t(toast.message)}</p><button aria-label={t("Dismiss notification")} onClick={() => setToasts((current) => current.filter((item) => item.id !== toast.id))}><X className="size-4" /></button></motion.div>)}</AnimatePresence></div></ToastContext.Provider>; }
+export function useToast() { const value = useContext(ToastContext); if (!value) throw new Error("ToastProvider missing"); return value; }

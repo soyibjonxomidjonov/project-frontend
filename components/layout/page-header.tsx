@@ -1,0 +1,6 @@
+"use client";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import { useI18n } from "@/lib/i18n/provider";
+export function PageHeader({ eyebrow, title, description, action }: { eyebrow?: string; title: string; description?: string; action?: React.ReactNode }) { const { t }=useI18n(); return <div className="mb-7 flex flex-wrap items-start justify-between gap-4"><div>{eyebrow && <p className="mb-2 text-xs font-bold uppercase tracking-[.16em] text-primary">{t(eyebrow)}</p>}<h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{t(title)}</h1>{description && <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">{t(description)}</p>}</div>{action}</div>; }
+export function Breadcrumbs({ items }: { items: { label: string; href?: string }[] }) { const { t }=useI18n(); return <nav aria-label={t("Breadcrumb")} className="mb-5 flex flex-wrap items-center gap-1 text-sm text-muted">{items.map((item,i)=><span key={i} className="flex items-center gap-1">{i>0 && <ChevronRight className="size-4"/>}{item.href?<Link href={item.href} className="hover:text-foreground">{t(item.label)}</Link>:<span aria-current="page" className="text-foreground">{t(item.label)}</span>}</span>)}</nav>; }

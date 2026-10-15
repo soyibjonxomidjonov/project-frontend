@@ -1,0 +1,10 @@
+export type User = { id: string; email: string; name: string; avatar_url?: string | null; role: "user" | "admin"; created_at?: string };
+export type Entity = { id: string; type: string; title: string; data: Record<string, unknown>; status: string; owner_id?: string | null; is_public: boolean; created_at: string; updated_at: string };
+export type PageResult<T> = { items: T[]; total: number; page: number; page_size: number };
+export type Document = { id: string; title: string; filename: string | null; mime_type: string | null; status: "processing" | "ready" | "failed"; chunk_count: number; created_at: string };
+export type ChatSession = { id: string; title: string | null; assistant: string; created_at: string };
+export type ChatMessage = { id: string; role: "user" | "assistant" | "tool"; content: string; meta?: { sources?: Source[] }; created_at: string };
+export type Source = { title: string; document_id?: string; excerpt?: string };
+export type ChatReply = { session_id: string; message: ChatMessage; sources?: Source[] };
+export type EntityStats = { total: number; by_status?: Record<string, number>; by_day?: { date: string; count: number }[] };
+export type TokenPair = { access_token: string; refresh_token: string; token_type: string; expires_in: number };

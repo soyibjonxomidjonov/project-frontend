@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8f9fb; --foreground: #111c35; --surface: #ffffff; --surface-muted: #f0f2f7;
+  --primary: #4648c8; --primary-foreground: #ffffff; --secondary: #e9eafb; --secondary-foreground: #292c83;
+  --accent: #dfe2ff; --muted: #66718a; --border: #e2e6ee; --success: #14815e; --warning: #ad6a13; --error: #c84449;
+  --radius: 0.85rem; --shadow: 0 12px 40px -24px rgba(31, 45, 85, .25); --font-sans: Arial, Helvetica, sans-serif;
+  /* Semantic radius scale — central knobs for rebranding. Change here, every control follows. */
+  --radius-control: 0.625rem; /* 10px — small controls: badges, chips, icon buttons */
+  --radius-field: 0.75rem;    /* 12px — buttons, inputs, selects, dropdown/select triggers */
+  --radius-panel: 1rem;       /* 16px — dropdown, popover, and select panels */
+  --radius-dialog: 1.25rem;   /* 20px — dialogs and sheets */
+  --shadow-panel: 0 16px 48px -24px rgba(31, 45, 85, .32);
+}
+.dark {
+  --background: #101729; --foreground: #edf1fb; --surface: #172238; --surface-muted: #202d44;
+  --primary: #969afa; --primary-foreground: #111530; --secondary: #282b63; --secondary-foreground: #f0f0ff;
+  --accent: #343878; --muted: #aab5cb; --border: #30405b; --success: #5ad0a5; --warning: #f2be64; --error: #fc888d;
+  --shadow: 0 12px 40px -24px rgba(0, 0, 0, .5);
+}
+@theme inline {
+  --color-background: var(--background); --color-foreground: var(--foreground); --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary); --color-secondary-foreground: var(--secondary-foreground); --color-accent: var(--accent);
+  --color-muted: var(--muted); --color-border: var(--border); --color-success: var(--success); --color-warning: var(--warning); --color-error: var(--error);
+  --radius-lg: var(--radius); --font-sans: var(--font-sans);
+  --radius-control: var(--radius-control); --radius-field: var(--radius-field);
+  --radius-panel: var(--radius-panel); --radius-dialog: var(--radius-dialog);
+  --shadow-panel: var(--shadow-panel);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+::selection { background: var(--accent); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
