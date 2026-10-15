@@ -51,10 +51,15 @@ async function flush() {
     });
   }));
 }
+// On-display translation needs the server route, which is absent in the static
+// export build. Gate it behind a flag so content shows as-is unless a server
+// deployment enables it.
+const TRANSLATION_ENABLED = process.env.NEXT_PUBLIC_ENABLE_TRANSLATION === "true";
+
 export function useTranslatedText(text: string | null | undefined) {
   const { locale } = useI18n();
   const original = text || "";
-  const needsTranslation = /\p{L}/u.test(original);
+  const needsTranslation = TRANSLATION_ENABLED && /\p{L}/u.test(original);
   const result = useQuery({ queryKey: ["translation", locale, original], queryFn: () => translateLong(original, locale), enabled: needsTranslation, staleTime: Infinity, retry: false });
   return { text: needsTranslation ? result.data || original : original, unavailable: needsTranslation && result.isError, loading: needsTranslation && result.isPending };
 }

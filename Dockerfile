@@ -1,31 +1,18 @@
-FROM node:22-alpine AS deps
+# 1) Build the static SPA (Next.js `output: export` → ./out)
+FROM node:20-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
-
-FROM node:22-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG NEXT_PUBLIC_API_BASE_URL=/backend
-ARG NEXT_PUBLIC_ENABLE_DEMO_FIXTURES=false
-ARG NEXT_PUBLIC_ENABLE_BACKEND_DEMO_LOGIN=true
-ARG API_INTERNAL_URL=http://api:8000
+# Backend base URL is baked into the client at build time.
+ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
-ENV NEXT_PUBLIC_ENABLE_DEMO_FIXTURES=$NEXT_PUBLIC_ENABLE_DEMO_FIXTURES
-ENV NEXT_PUBLIC_ENABLE_BACKEND_DEMO_LOGIN=$NEXT_PUBLIC_ENABLE_BACKEND_DEMO_LOGIN
-ENV API_INTERNAL_URL=$API_INTERNAL_URL
-ENV DOCKER_BUILD=true
+ENV NEXT_PUBLIC_ENABLE_DEMO_FIXTURES=false
 RUN npm run build
 
-FROM node:22-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-COPY --chown=node:node --from=builder /app/public ./public
-COPY --chown=node:node --from=builder /app/.next/standalone ./
-COPY --chown=node:node --from=builder /app/.next/static ./.next/static
-USER node
-EXPOSE 3000
-CMD ["node", "server.js"]
+# 2) Serve the static files with nginx (SPA fallback)
+FROM nginx:alpine AS runner
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/out /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,10 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        # Read from .env beside this file; defaults to localhost for safety.
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+    ports:
+      - "127.0.0.1:3000:80"
+    restart: unless-stopped

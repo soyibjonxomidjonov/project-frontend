@@ -50,12 +50,13 @@ npm run build       # production build (same step Docker runs)
 
 ## Deployment (decided)
 
-**Model: Docker server deploy on AWS EC2** — NOT static export. The app needs a Node server (`/api/translate` and `/dashboard/projects/[id]` are server-rendered). Static export was considered and rejected.
+**Model: static SPA export served by nginx on a container.** `next.config.ts` has `output: "export"` → `next build` emits `out/`. The `Dockerfile` is multi-stage: node:20-alpine builds, nginx:alpine serves `out/` with SPA fallback (`nginx.conf` `try_files $uri $uri.html $uri/index.html /index.html`). `docker-compose.yml` has one `web` service on `127.0.0.1:3000:80`. The host nginx proxies the subdomain → `127.0.0.1:3000` and handles SSL.
 
-- `.github/workflows/frontend-cd.yaml` — on push to `main`: SSH to EC2, `git reset --hard`, rebuild only the `web` service via `docker compose up -d --build --no-deps web`, then wait for container health.
-- Compose project name is `nexora`, so `web` joins the same network as the separately-deployed `api` + `db`.
-- CD needs: GitHub secrets `HOST_DNS` + `EC2_SSH_KEY`; server dir `/home/ec2-user/project-frontend` (editable as `APP_DIR` in the workflow) with a filled `.env` (from `.env.compose.example`) and Docker + Compose installed.
-- `compose.yaml` runs db (pgvector) + api (FastAPI) + web; the Next rewrite proxies browser `/backend` → `api:8000`.
+- CD is **the user's own `.github/workflows/deploy.yml`** — do not edit it or create other workflows. It SSHes to `/srv/frontend`, `git reset --hard`, `docker compose up -d --build`, curls `127.0.0.1:3000`. Needs GitHub secrets `HOST_DNS` + `EC2_SSH_KEY` and a `.env` at `/srv/frontend/.env`.
+- Server `.env` provides the build arg `NEXT_PUBLIC_API_BASE_URL` (the real backend URL, e.g. `https://api.<domain>`). The client calls the backend directly at that URL (no proxy).
+- Backend is deployed separately (sibling repo); this repo ships frontend only.
+
+Static-export consequences (already handled): the `/api/translate` server route was removed and on-display translation is gated behind `NEXT_PUBLIC_ENABLE_TRANSLATION` (off by default, content shows as-is); the old `/dashboard/projects/[id]` dynamic route became the static `/dashboard/projects/view?id=...` page.
 
 ## Working conventions
 
