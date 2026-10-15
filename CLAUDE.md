@@ -2,6 +2,10 @@
 
 Orientation for Claude Code. Read this first every session so the project does not need re-explaining.
 
+> **📖 Read `TOMORROW.md` first — it is the single, complete brief** (project, deploy, backend
+> wiring, rebrand, adding features, design rules, gotchas). This CLAUDE.md is a short summary;
+> `TOMORROW.md` has everything in one place.
+
 ## What this is
 
 **Nexora AI frontend** — a domain-neutral, rebrandable **competition starter** (Next.js 15 App Router, React 19, TypeScript strict, Tailwind 4). "Nexora AI" is a placeholder brand. The competition topic is revealed 2026-10-16; after that the app is rebranded via central config and wired to the real backend/LLM. Preserve and extend this starter — do not rebuild it.
