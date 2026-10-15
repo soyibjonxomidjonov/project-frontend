@@ -31,7 +31,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content position="popper" sideOffset={8} collisionPadding={12} className="z-50 min-w-[max(var(--radix-select-trigger-width),9rem)] overflow-hidden rounded-panel border border-border bg-surface p-1.5 shadow-[var(--shadow-panel)]">
-          <SelectPrimitive.Viewport className="flex flex-col gap-0.5">
+          <SelectPrimitive.Viewport className="flex flex-col gap-1">
             {locales.map((item) => (
               <SelectPrimitive.Item key={item} value={item} className="flex min-h-9 cursor-pointer select-none items-center justify-between gap-8 rounded-control px-3 py-2 text-sm font-medium text-foreground outline-none transition-colors data-[highlighted]:bg-surface-muted data-[state=checked]:bg-secondary data-[state=checked]:font-semibold data-[state=checked]:text-primary">
                 <SelectPrimitive.ItemText>{localeNames[item]}</SelectPrimitive.ItemText>
