@@ -1,0 +1,29 @@
+name: Frontend CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: AWS EC2 ga SSH orqali ulanish
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Serverdagi loyiha papkasi. Boshqa joyda bo'lsa shu yo'lni o'zgartiring.
+            cd /home/ec2-user/project-frontend
+
+            git fetch origin main
+            sudo chown -R ec2-user:ec2-user .
+            git reset --hard origin/main
+
+            # Next.js kodi image ichida build qilinadi, shuning uchun har deployda qayta build.
+            # Faqat frontend (web) qayta quriladi; api va db ga tegilmaydi (--no-deps).
+            docker-compose -f compose.yaml up -d --build --force-recreate --no-deps web
+
+            docker image prune -f
