@@ -1,0 +1,44 @@
+name: Frontend CD
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Serverga SSH orqali deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 15m
+          script: |
+            set -e
+            cd /home/ec2-user/project-frontend
+            git fetch origin main
+            git reset --hard origin/main
+
+            test -f .env || { echo ".env topilmadi: /home/ec2-user/project-frontend/.env"; exit 1; }
+
+            docker compose up -d --build --remove-orphans
+
+            for i in $(seq 1 20); do
+              if curl -fsS http://127.0.0.1:3000/ > /dev/null; then
+                echo "Frontend ishlayapti"
+                docker image prune -f > /dev/null
+                exit 0
+              fi
+              sleep 3
+            done
+
+            echo "Frontend 60 soniyada javob bermadi. Oxirgi loglar:"
+            docker compose logs --tail 80
+            exit 1
