@@ -6,7 +6,20 @@ Orientation for Claude Code. Read this first every session so the project does n
 
 **Nexora AI frontend** — a domain-neutral, rebrandable **competition starter** (Next.js 15 App Router, React 19, TypeScript strict, Tailwind 4). "Nexora AI" is a placeholder brand. The competition topic is revealed 2026-10-16; after that the app is rebranded via central config and wired to the real backend/LLM. Preserve and extend this starter — do not rebuild it.
 
-The FastAPI backend is a **sibling project** (`../backend-project`). Never modify the backend from this repo.
+The FastAPI backend is a **sibling project** (`../backend-project`, path `backend/app`). Never modify the backend from this repo — only read it to align contracts.
+
+## Backend API (read `../backend-project/backend/app/routers`)
+
+Routers are mounted at root (no `/api` prefix). The frontend reaches them via `NEXT_PUBLIC_API_BASE_URL` (compose: `/backend` → proxied to `api:8000`). `lib/api/modules.ts` already wires the core surface.
+
+- `auth` `/auth`: `email/send-code`, `email/verify`, `refresh`, `demo-login`, `google/login`, `google/callback`, `me` — **wired**.
+- `entities` `/entities`: `stats`, list `""`, `{id}`, create, `PATCH {id}`, `DELETE {id}` — **wired** (projects + configurable resources).
+- `knowledge` `/knowledge`: `upload`, `text`, `documents`, `DELETE documents/{id}`, `search` — upload/list/delete wired; **`text` + `search` not yet used**.
+- `ai` `/ai`: `chat`, `insights`, `sessions`, `sessions/{id}`, `DELETE sessions/{id}` — chat/sessions wired; **`insights` not yet used**.
+- `admin` `/admin`: `users`, `PATCH users/{id}`, `overview` — **no frontend admin panel yet**.
+- `GET /health` — wired.
+
+When wiring new features, add typed adapters in `lib/api/modules.ts` + models in `lib/api/contracts.ts`; confirm exact shapes against the router source and `API_CONTRACT.md`.
 
 ## Read these for detail (do not re-derive)
 
