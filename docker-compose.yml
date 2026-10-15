@@ -2,9 +2,12 @@ services:
   web:
     build:
       context: .
+      # Values are read from .env beside this file (change + redeploy to apply).
       args:
-        # Read from .env beside this file; defaults to localhost for safety.
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
+        NEXT_PUBLIC_ENABLE_DEMO_FIXTURES: ${NEXT_PUBLIC_ENABLE_DEMO_FIXTURES:-false}
+        NEXT_PUBLIC_ENABLE_BACKEND_DEMO_LOGIN: ${NEXT_PUBLIC_ENABLE_BACKEND_DEMO_LOGIN:-false}
+        NEXT_PUBLIC_ENABLE_TRANSLATION: ${NEXT_PUBLIC_ENABLE_TRANSLATION:-false}
     ports:
       - "127.0.0.1:3000:80"
     restart: unless-stopped
